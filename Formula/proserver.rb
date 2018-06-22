@@ -4,8 +4,8 @@ class Proserver < Formula
   url "https://dotfiles.fnkr.net/bin/proserver",
       :using => :nounzip
 
-  version "4"
-  sha256 "52814186e4e2ea69495ba9854e5824fd282d5896335284c2770614c01c412575"
+  version "5"
+  sha256 "1b908b362dac24d24c49c337cd421e31a128bba8b1690b75333bd4cd5a8a1e4d"
 
   bottle :unneeded
 
