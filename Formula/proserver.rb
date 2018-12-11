@@ -5,7 +5,7 @@ class Proserver < Formula
       :using => :nounzip
 
   version "7"
-  sha256 "1eb7f76c4e761f34979a3115d0929d64e8a96ea46da334cc6ef74bb0ca2bf807"
+  sha256 "0fea942dd4e269c35cdd204ee4af2c3a25bb6cf104c57420b3e98c832523b771"
 
   bottle :unneeded
 
