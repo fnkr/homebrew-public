@@ -4,8 +4,8 @@ class HttpStatus < Formula
   url "https://dotfiles.fnkr.net/bin/http-status",
       :using => :nounzip
 
-  version "3"
-  sha256 "53d4419b620309e01d7a05a36bb98a09e47f02218c7cb93cb6253f0610c52bb7"
+  version "4"
+  sha256 "77265e248230140ae7b4dab3fdef44a213d81160a339a5046d06e26e34b4946d"
 
   bottle :unneeded
 
