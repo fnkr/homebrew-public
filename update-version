@@ -1,0 +1,26 @@
+#!/usr/bin/env bash
+set -e -u -o pipefail
+
+# Launch SSH Agent, populate known_hosts
+eval "$(ssh-agent -s)"
+echo "$SSH_PRIVATE_KEY" | ssh-add -
+sudo tee -a /etc/ssh/ssh_known_hosts <<<"github.com ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAQEAq2A7hRGmdnm9tUDbO9IDSwBK6TbQa+PXYPCPy6rbTrTtw7PHkccKrpp0yVhp5HdEIcKr6pLlVDBfOLX9QUsyCOV0wzfjIJNlGEYsdlLJizHhbn2mUjvSAHQqZETYP81eFzLQNnPHt4EVVUh7VfDESU84KezmD5QlWpXLmvU31/yMf+Se8xhHTvKSCZIFImWwoG6mbUoWf9nzpIoaSjB+weqqUUmpaaasXVal72J+UX2B+2RPW3RcT0eOzQgqlJL3RKrTJvdsjE3JEAvGq3lGHSZXy28G3skua2SmVi/w4yCE6gbODqnTWlg7+wC604ydGXA8VJiS5ap43JXiUFFAaQ=="
+
+# Clone repository
+git clone --depth 1 git@github.com:fnkr/homebrew-public.git .
+
+# Update formula
+RELEASE_TAG="${GITHUB_REF#refs/tags/}"
+RELEASE_ASSET_URL="https://github.com/${GITHUB_REPOSITORY}/releases/download/${RELEASE_TAG}/${RELEASE_ASSET_NAME}"
+RELEASE_ASSET_SHA256="$(wget -qO- "$RELEASE_ASSET_URL" | sha256sum - | awk '{print $1}')"
+sed -i -E -e 's|^(\s*url\s+")[^"]*(".*)$|\1'"$RELEASE_ASSET_URL"'\2|' -e 's|^(\s*sha256\s+")[^"]*(".*)$|\1'"$RELEASE_ASSET_SHA256"'\2|' -e 's|^(\s*version\s+")[^"]*(".*)$|\1'"$RELEASE_TAG"'\2|' "$FORMULA"
+
+# Update repository
+if [ "$(git status --porcelain -- "$FORMULA" | awk '{print $1}')" = "M" ]; then
+    git config --local user.name "$(curl -s -H "Authorization: token ${GITHUB_TOKEN}" "https://api.github.com/users/${GITHUB_ACTOR}" | jq --raw-output .name)"
+    git config --local user.email "$(curl -s -H "Authorization: token ${GITHUB_TOKEN}" "https://api.github.com/users/${GITHUB_ACTOR}" | jq --raw-output .email)"
+    git add -- "$FORMULA"
+    git commit -m "Update ${FORMULA}"
+    git pull --rebase
+    git push origin master
+fi
