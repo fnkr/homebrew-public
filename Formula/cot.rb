@@ -5,8 +5,6 @@ class Cot < Formula
   sha256 "de3c9ad8ac86bbeb79758d77e87da1e007a2d64fc867fc0599aee7cea9cdda7a"
   version "v0.12"
 
-  bottle :unneeded
-
   def install
     bin.install "cot_darwin_amd64" => "cot"
   end
